@@ -2,16 +2,31 @@
 
 ## -+- Klicky Probe
 [probe]
-pin: PROBE 
-z_offset: 0
+pin: TAP
 x_offset: 0 
 y_offset: 0
-speed: 5.0
+speed: 7.0
 samples: 3
 samples_result: median
 sample_retract_dist: 3.0
 samples_tolerance: 0.0075
 samples_tolerance_retries: 3
+activate_gcode:
+    {% set PROBE_TEMP = 150 %}
+    {% set MAX_TEMP = PROBE_TEMP + 5 %}
+    {% set ACTUAL_TEMP = printer.extruder.temperature %}
+    {% set TARGET_TEMP = printer.extruder.target %}
+
+    {% if TARGET_TEMP > PROBE_TEMP %}
+        { action_respond_info('Extruder temperature target of %.1fC is too high, lowering to %.1fC' % (TARGET_TEMP, PROBE_TEMP)) }
+        M109 S{ PROBE_TEMP }
+    {% else %}
+        # Temperature target is already low enough, but nozzle may still be too hot.
+        {% if ACTUAL_TEMP > MAX_TEMP %}
+            { action_respond_info('Extruder temperature %.1fC is still too high, waiting until below %.1fC' % (ACTUAL_TEMP, MAX_TEMP)) }
+            TEMPERATURE_WAIT SENSOR=extruder MAXIMUM={ MAX_TEMP }
+        {% endif %}
+    {% endif %}
 ## -//-
 
 ## -+- Homing and Gantry Adjustment Routines
@@ -20,11 +35,6 @@ timeout: 1800
 ## -//-
 
 [safe_z_home]
-## -!- Disabled for Klicky 
-## -!- XY Location of the Z Endstop Switch
-## -!- Update -10,-10 to the XY coordinates of your endstop pin 
-## -!- (such as 157,305) after going through Z Endstop Pin
-## --- Location Definition step.
 home_xy_position:150,150 
 speed:100
 z_hop:10
@@ -41,9 +51,9 @@ z_positions:
    150, 348
    350, 18
 points:
-   30, 5
+   30, 38
    150, 245
-   270, 5
+   270, 38
 
 speed: 120
 retries: 3

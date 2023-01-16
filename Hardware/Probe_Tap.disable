@@ -1,6 +1,11 @@
 ## -+- Mesh Settings Configs
 
-## -+- Klicky Probe
+[stepper_z]
+## -+- Tap
+endstop_pin: probe:z_virtual_endstop
+## -//-
+
+## -+- Tap Probe
 [probe]
 pin: TAP
 x_offset: 0 

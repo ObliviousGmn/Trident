@@ -23,7 +23,7 @@ heater_pin: HEATER_HE
 ## -//-
 
 ## -+- Validate the following thermistor type to make sure it is correct
-sensor_type: ATC Semitec 104NT-4-R025H42G 
+sensor_type: Generic 3950 #ATC Semitec 104NT-4-R025H42G 
 sensor_pin: TEMP_HE
 min_temp: 10
 max_temp: 280
